@@ -170,8 +170,63 @@ void exibirEstado(Fila *fila, Pilha *pilha) {
     printf("---------------------------\n");
 }
 
-// ----------- MAIN -----------
+//função trocar peça dafrente da fila com o topo da fila
+void TrocarFrenteComTopo(Fila *fila, Pilha *pilha){
+    printf("=== ESTADO ANTES DA TROCA ===\n");
+    exibirEstado(fila, pilha);
 
+    if(fila->quantidade == 0){
+        printf("\nA fila esta vazia\n.");//se a fila estiver vazia
+        return;
+    }
+
+    if (pilha->topo == -1){
+        printf("\nA pilha esta vazia.\n");//se a pilha estiver vazia
+        return;
+    }
+
+    int idxFrente = fila->inicio;
+    int idxTopo = pilha->topo;
+
+    //troca simples
+    Peca temporaria = fila->itens[idxFrente];
+    fila->itens[idxFrente] = pilha->itens[idxTopo];
+    pilha->itens[idxTopo] = temporaria;
+
+    printf("\n>>> Troca realizada <<<\n");
+    printf("\n=== ESTADO DEPOIS DA TROCA ===\n");
+    exibirEstado(fila, pilha);
+}
+
+//fução trocar três peças fila com as três da pilha
+void trocarTresPecas(Fila *fila, Pilha *pilha){
+    printf("=== ESTADO ANTES DA TROCA ===\n");
+    exibirEstado(fila, pilha);
+
+    if(fila->quantidade < 3){
+        printf("\nA fila não tem 3 peças!");
+        return;
+    }
+    if(pilha->topo < 2){
+        printf("\nA pilha não tem 3 peças.\n");
+        return;
+    }
+
+    for(int i = 0; i < 3; i++){
+        int idxFila = (fila->inicio + i) % MAX_FILA;
+        int idxPilha = pilha->topo -i;
+
+        Peca temporaria = fila->itens[idxFila];
+        fila->itens[idxFila] = pilha->itens[idxPilha];
+        pilha->itens[idxPilha] = temporaria;
+    }
+
+    printf("\n>>> TROCA REALIZADA <<<\n");
+    printf("\n=== ESTADO DEPOIS DA TROCA ===\n");
+    exibirEstado(fila, pilha);
+}
+
+// ----------- MAIN -----------
 int main() {
     srand(time(NULL));
 
@@ -184,10 +239,10 @@ int main() {
     inicializarPilha(&pilha);
 
     // Inicializa fila com 5 peças
-    GerarPeca();
+    Peca iniciais[5] = { {"I",1}, {"O",2}, {"T",3}, {"L",4}, {"J",5} };
 
     for (int i = 0; i < 5; i++)
-        inserirFila(&fila, GerarPeca());
+        inserirFila(&fila, iniciais[i]);
 
     exibirEstado(&fila, &pilha);
 
@@ -199,6 +254,8 @@ int main() {
         printf("2 - Reservar peça\n");
         printf("3 - Usar peça reservada\n");
         printf("4 - Exibir estado atual\n");
+        printf("5 - Troca peca da frente da fila com peca do topo da pilha.\n");
+        printf("6 - Trocar os 3 primeiros da fila com os 3 da pilha.\n");
         printf("0 - Sair\n");
         printf("Escolha: ");
         scanf("%d", &opcao);
@@ -208,6 +265,8 @@ int main() {
             case 2: reservarPeca(&fila, &pilha); break;
             case 3: usarReservada(&pilha); break;
             case 4: exibirEstado(&fila, &pilha); break;
+            case 5: TrocarFrenteComTopo(&fila, &pilha); break;
+            case 6: trocarTresPecas(&fila, &pilha); break;
             case 0: printf("\nEncerrando...\n"); break;
             default: printf("\nOpção inválida!\n");
         }
